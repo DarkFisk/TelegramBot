@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+/**
+ * Validates Telegram Bot WebApp InitData via `HMAC_SHA_256`
+ */
 @Slf4j
 @UtilityClass
 public class TelegramWebappDataValidatorUtil {
@@ -25,9 +28,8 @@ public class TelegramWebappDataValidatorUtil {
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.joining("\n"));
 
-        String secret = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, "WebAppData")
-                .hmacHex(telegramBotToken);
-
+        byte[] secret = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, "WebAppData")
+                .hmac(telegramBotToken);
         String dataCheckHash = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, secret)
                 .hmacHex(dataCheckString);
         return hash.equals(dataCheckHash);
